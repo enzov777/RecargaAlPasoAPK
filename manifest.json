@@ -1,0 +1,20 @@
+{
+  "name": "Panel de Transferencias Entel",
+  "short_name": "Entel RAP",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0096c7",
+  "icons": [
+    {
+      "src": "logo-entel.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo-entel.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
