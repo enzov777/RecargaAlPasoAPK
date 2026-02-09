@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel de Transferencias – Entel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0096c7">
+
+<style>
+:root{
+    --celeste:#00b4d8;
+    --azul:#005aa7;
+    --blanco:#ffffff;
+    --fondo:#f4f8fb;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:var(--fondo);
+    color:#00324f;
+}
+
+/* HEADER */
+header{
+    background:linear-gradient(135deg, var(--azul), var(--celeste));
+    padding:15px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#fff;
+}
+
+header img{
+    height:40px;
+}
+
+header h1{
+    font-size:18px;
+    margin:0;
+    font-weight:600;
+}
+
+/* CONTENEDOR */
+.container{
+    padding:16px;
+    max-width:480px;
+    margin:auto;
+}
+
+/* TARJETAS */
+.card{
+    background:#fff;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+.card h3{
+    margin:0 0 10px 0;
+    color:var(--azul);
+    font-size:16px;
+    text-align:center;
+}
+
+/* INPUTS */
+input{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:1px solid #cce3f3;
+    font-size:16px;
+}
+
+input::placeholder{
+    color:#8aaac0;
+}
+
+/* BOTONES */
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.btn-main{
+    background:var(--celeste);
+    color:#00324f;
+}
+
+.btn-main:hover{
+    background:#00a2c7;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+/* TEXTOS */
+.note{
+    font-size:13px;
+    color:#555;
+    text-align:center;
+    margin-top:10px;
+}
+
+.alert{
+    background:#eaf6ff;
+    border-left:4px solid var(--celeste);
+    padding:12px;
+    border-radius:10px;
+    font-size:13px;
+    color:#004b73;
+    margin-top:12px;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <img src="logo-entel.png" alt="Entel">
+    <h1>Panel de Transferencias</h1>
+</header>
+
+<div class="container">
+
+    <!-- Número -->
+    <div class="card">
+        <h3>Número de destino</h3>
+        <input 
+            type="tel"
+            id="numero"
+            placeholder="Ej: 71234567"
+            maxlength="8"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+        >
+    </div>
+
+    <!-- Monto libre -->
+    <div class="card">
+        <h3>Crédito a transferir</h3>
+        <input type="number" id="otroMonto" placeholder="Monto en Bs">
+        <button class="btn-main" onclick="transferirOtroMonto()">
+            Transferir crédito
+        </button>
+    </div>
+
+    <!-- Rápidos -->
+    <div class="card">
+        <h3>Transferencias rápidas</h3>
+
+        <div class="grid">
+            <button class="btn-main" onclick="transferirMonto(10)">10 Bs</button>
+            <button class="btn-main" onclick="transferirMonto(15)">15 Bs</button>
+            <button class="btn-main" onclick="transferirMonto(30)">30 Bs</button>
+            <button class="btn-main" onclick="transferirMonto(50)">50 Bs</button>
+            <button class="btn-main" onclick="transferirMonto(100)">100 Bs</button>
+        </div>
+
+        <div class="alert">
+            Clientes con <b>Día Entel activo</b> deben enviar créditos
+            únicamente en montos de 10, 15, 30, 50 o 100 Bs.<br><br>
+            Activación desde el celular del cliente:<br>
+            <b>*10*3*1#</b>
+        </div>
+    </div>
+
+    <!-- USSD -->
+    <div class="card">
+        <h3>Menú USSD Entel</h3>
+        <button class="btn-main" onclick="ejecutarUSSD('*133%23')">
+            Abrir menú *133#
+        </button>
+        <div class="note">
+            1 = Saldo transferencia · 2 = Saldo prepago · 3 = Consultas
+        </div>
+    </div>
+
+    <div class="note">
+        Funciona en Android · El marcador debe confirmarse manualmente
+    </div>
+
+</div>
+
+<script>
+function ejecutarUSSD(codigo){
+    window.location.href = "tel:" + codigo;
+}
+
+function validarNumero(n){
+    if(n.length !== 8){
+        alert("El número debe tener 8 dígitos.");
+        return false;
+    }
+    return true;
+}
+
+function transferirMonto(m){
+    const n = document.getElementById("numero").value.trim();
+    if(!validarNumero(n)) return;
+    ejecutarUSSD(`*133*${n}*${m}%23`);
+}
+
+function transferirOtroMonto(){
+    const n = document.getElementById("numero").value.trim();
+    const m = document.getElementById("otroMonto").value.trim();
+    if(!validarNumero(n)) return;
+    if(!m || m <= 0){
+        alert("Monto inválido.");
+        return;
+    }
+    ejecutarUSSD(`*133*${n}*${m}%23`);
+}
+
+/* PWA */
+if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>
